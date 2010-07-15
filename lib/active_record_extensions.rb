@@ -4,6 +4,7 @@
 #
 
 require 'active_record'
+require 'active_record_extensions/has_attached_file'
 
 ActiveRecord::Base.class_eval do
   def self.validates_as_alnum(field)
@@ -17,4 +18,6 @@ ActiveRecord::Base.class_eval do
       end                                 #  end                                   
     end
   end
+
+  extend ActiveRecordExtensions::HasAttachedFile
 end
