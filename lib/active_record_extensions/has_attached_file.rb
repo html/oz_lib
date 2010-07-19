@@ -32,6 +32,13 @@ module ActiveRecordExtensions
         f = item.send(file) 
 
         if f && item.valid? && (!(f.id && f.id == item.send("#{file}_id")) && f.save)
+          if item.send("#{file}_id")
+            begin
+              Blob.find(item.send("#{file}_id")).destroy
+            rescue
+            end
+          end
+
           item.send("#{file}_id=", f.id)
         elsif f && f.errors.errors
           f.errors.full_messages.each do |message|

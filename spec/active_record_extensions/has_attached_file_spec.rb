@@ -142,6 +142,19 @@ describe "has_attached_file extension" do
             @row.errors.on(:file).should == 'Test Error'
           end
         end
+
+        context "with assigned file" do
+          it "should delete old file" do
+            @row = @model.new :file => fixture_file_upload('correct_jpeg_image.jpg', 'image/jpg'), :file_id => 3
+
+            @row.file.expects(:save).returns(true).at_least(1)
+            @model.any_instance.expects(:file_id=).at_least(1)
+
+            ActiveRecordExtensions::HasAttachedFile::Blob.expects(:find).with(3).returns(mock(:destroy => nil))
+
+            @row.save
+          end
+        end
       end
     end
   end
