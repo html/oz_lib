@@ -34,7 +34,11 @@ module ActiveRecordExtensions
         if f && item.valid? && (!(f.id && f.id == item.send("#{file}_id")) && f.save)
           item.send("#{file}_id=", f.id)
         elsif f && f.errors.errors
-          #TODO
+          f.errors.full_messages.each do |message|
+            item.errors.add(file, message)
+          end
+
+          false
         end
       end
     end

@@ -97,7 +97,7 @@ describe "has_attached_file extension" do
           @model = TestModel4
         end
 
-        it "should do nothing" do
+        it "should do nothing when there are no file errors" do
           @model.any_instance.expects(:file_id=).never
           @row = @model.new :file => fixture_file_upload('correct_jpeg_image.jpg', 'image/jpg')
           @row.save
@@ -116,9 +116,7 @@ describe "has_attached_file extension" do
             @row.save
           end
         end
-      end
 
-      context "valid object" do
         context "with saved file object" do
           it "should not change object's file_id" do
             @row = @model.new :file => fixture_file_upload('correct_jpeg_image.jpg', 'image/jpg')
@@ -130,6 +128,18 @@ describe "has_attached_file extension" do
             @model.any_instance.expects(:file_id=).never
 
             @row.save
+          end
+        end
+
+        context "with invalid file object" do
+          it "should not save record and add validation errors if there are any errors for file" do
+            @model.any_instance.expects(:file_id=).never
+            @row = @model.new :file => fixture_file_upload('correct_jpeg_image.jpg', 'image/jpg')
+            @row.file.stubs(:errors).returns(mock(:errors => {}, :full_messages => ["Test Error"]))
+
+            @row.save.should be_false
+            @row.file_id.should be_nil
+            @row.errors.on(:file).should == 'Test Error'
           end
         end
       end
