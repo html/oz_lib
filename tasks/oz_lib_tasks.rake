@@ -2,4 +2,3 @@
 # task :oz_lib do
 #   # Task goes here
 # end
-require 'rspec.rake'
