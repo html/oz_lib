@@ -19,5 +19,15 @@ ActiveRecord::Base.class_eval do
     end
   end
 
+  def self.only_jpeg_or_png_images_allowed_for(column)
+    lambda do |item|
+      if item.send(column)
+        unless item.send(column).content_type.match /image\/(?:p?jpe?g|(?:x-)?png)/
+          item.errors.add(column, "should be either png or jpeg image")
+        end
+      end
+    end
+  end
+
   extend ActiveRecordExtensions::HasAttachedFile
 end
