@@ -29,5 +29,35 @@ ActiveRecord::Base.class_eval do
     end
   end
 
+  def self.max_size_of(column, size_val, size_name)
+    lambda do |item|
+      file = item.send("#{column}_file_object")
+      if file
+        if file.size > size_val.send(size_name.downcase)
+          item.errors.add(column, "size should be less than #{size_val} #{size_name}")
+        end
+      end
+    end
+  end
+
+  def self.max_items_count(max_count, options = {})
+    lambda do |item|
+      count = 
+        if options[:scope] 
+          if respond_to?(options[:scope])
+            send(options[:scope]).count 
+          else
+            self.count(:conditions => { options[:scope] => item.send(options[:scope]) })
+          end
+        else
+          self.count
+        end
+
+      if count >= max_count
+        item.errors.add_to_base("Max items count exceeded, can't add another one")
+      end
+    end
+  end
+
   extend ActiveRecordExtensions::HasAttachedFile
 end

@@ -11,15 +11,19 @@ module ActiveRecordExtensions
         end
       end
 
-      unless column_names.include?("#{file}_id")
-        raise StandardError, "#{to_s} should have #{file}_id column"
+      file_id = "#{file}_id"
+      file_size = "#{file}_size" 
+      blob_file_object = "blob_#{file}_object"
+
+      unless column_names.include?(file_id)
+        raise StandardError, "#{to_s} should have #{file_id} column"
       end
 
-      define_method file do
-        instance_variable_get("@#{file}")
-      end
+      attr_reader file
+      attr_reader "#{file}_file_object"
 
       define_method "#{file}=" do |f|
+        instance_variable_set("@#{file}_file_object", f)
         instance_variable_set("@#{file}", Blob.new(
           :blob_owner_id => blob_owner_id,
           :content_type => f.content_type,
@@ -27,6 +31,33 @@ module ActiveRecordExtensions
           :file => Base64.encode64(f.read)
         ))
       end
+
+      define_method file_size do
+        begin
+          if send(file)
+            send(file).size
+          elsif send(file_id)
+            send(blob_file_object).size
+          end
+        rescue
+          nil
+        end
+      end
+
+      define_method blob_file_object do
+        begin
+          var = "@#{blob_file_object}" 
+
+          unless instance_variable_get(var) 
+            instance_variable_set(var, Blob.find(send(file_id)))
+          end
+
+          instance_variable_get(var)
+        rescue
+          nil
+        end
+      end
+
 
       before_save do |item|
         f = item.send(file) 
