@@ -35,9 +35,9 @@ module ActiveRecordExtensions
       define_method file_size do
         begin
           if send(file)
-            send(file).size
+            File.size(send(file))
           elsif send(file_id)
-            send(blob_file_object).size
+            File.size(send(blob_file_object))
           end
         rescue
           nil

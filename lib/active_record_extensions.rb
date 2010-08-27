@@ -11,11 +11,24 @@ ActiveRecord::Base.class_eval do
     validates_format_of field, :with => /\A[а-яА-Яa-zA-Z0-9][-а-яА-Яa-zA-Z0-9\s]+\Z/u, :message => "should contain at least two symbols and begin with a letter", :if => lambda { |m| m.errors.on(field).nil? }
   end
 
+  def self.validates_as_alnum_g(field)
+    validates_format_of field, :with => /^[-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9 ]+$/u, :message => "should contain letters, spaces, dashes or numbers and begin from letter or number", :if => lambda { |m| m.errors.on(field).nil? }
+  end
+
+  #
+  # Same as validates_as_alnum_g but also allows "`" and "'" symbols
+  #
+  def self.validates_as_alnum_g_extended(field)
+    validates_format_of field, :with => /^[-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9 '`]+$/u, :message => "contains wrong characters", :if => lambda { |m| m.errors.on(field).nil? }
+  end
+
   def self.default_value_for(key, val)
     before_validation_on_create do |item| 
       unless item.send(key)               #  unless email_action_type           
         item.send("#{key}=", val)         #    self.email_action_type = 'none'
       end                                 #  end                                   
+
+      true
     end
   end
 
@@ -33,7 +46,7 @@ ActiveRecord::Base.class_eval do
     lambda do |item|
       file = item.send("#{column}_file_object")
       if file
-        if file.size > size_val.send(size_name.downcase)
+        if File.size(file) > size_val.send(size_name.downcase)
           item.errors.add(column, "size should be less than #{size_val} #{size_name}")
         end
       end
