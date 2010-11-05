@@ -28,7 +28,7 @@ module ActiveRecordExtensions
           :blob_owner_id => blob_owner_id,
           :content_type => f.content_type,
           :name => f.original_filename,
-          :file => Base64.encode64(f.read)
+          :file => RUBY_VERSION == '1.9.1' ? [f.read].pack('m') : Base64.encode64(f.read)
         ))
       end
 
@@ -37,7 +37,7 @@ module ActiveRecordExtensions
           if send(file)
             File.size(send(file))
           elsif send(file_id)
-            File.size(send(blob_file_object))
+            send(blob_file_object).size
           end
         rescue
           nil
