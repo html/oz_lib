@@ -11,7 +11,7 @@ ActiveRecord::Base.class_eval do
   ALNUM_G_RE = /^[-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9 ]+$/u
   ALNUM_G_EXTENDED_RE = /^[-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9 '`’]+$/u
   IDENTIFIER_G_RE = /^[a-zA-Z][-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9]+$/u
-  IDENTIFIER_LIST_G_RE = /^([a-zA-Z][-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9]+,?)/u
+  IDENTIFIER_LIST_G_RE = /^([a-zA-Z][-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9]+,)*[a-zA-Z][-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9]+$/u
 
   def self.validates_as_alnum(field)
     validates_format_of field, :with => ALNUM_RE, :message => "should contain at least two symbols and begin with a letter", :if => lambda { |m| m.errors.on(field).nil? }
