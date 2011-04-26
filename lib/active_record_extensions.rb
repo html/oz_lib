@@ -12,6 +12,7 @@ ActiveRecord::Base.class_eval do
   ALNUM_G_EXTENDED_RE = /^[-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9 '`’]+$/u
   IDENTIFIER_G_RE = /^[a-zA-Z][-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9]+$/u
   IDENTIFIER_LIST_G_RE = /^([a-zA-Z][-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9]+,)*[a-zA-Z][-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}a-zA-Z0-9]+$/u
+  URL_RE = /^(?#Proto)(https?\:\/\/)?(?#Subdomains)([-#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}\w]+\.)+(?#TopLevelDomain)[#{"\xC3\x80-\xC3\x96\xC3\x98-\xC3\xB6\xC3\xB8-\xE1\xBF\xBE"}A-Za-z]{2,}(?#TheRest)\/?.*$/u
 
   def self.validates_as_alnum(field)
     validates_format_of field, :with => ALNUM_RE, :message => "should contain at least two symbols and begin with a letter", :if => lambda { |m| m.errors.on(field).nil? }
@@ -19,6 +20,10 @@ ActiveRecord::Base.class_eval do
 
   def self.validates_as_alnum_g(field)
     validates_format_of field, :with => ALNUM_G_RE, :message => "should contain letters, spaces, dashes or numbers and begin from letter or number", :if => lambda { |m| m.errors.on(field).nil? }
+  end
+
+  def self.validates_as_url(field)
+    validates_format_of field, :with => URL_RE, :message => "should be valid url", :if => lambda { |m| m.errors.on(field).nil? } 
   end
 
   #

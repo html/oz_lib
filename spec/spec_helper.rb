@@ -1,6 +1,7 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
 require 'rubygems'
+gem :rails, :version => '2.3.5'
 require File.dirname(__FILE__) + '/../init.rb'
 #require 'active_record'
 #require 'active_support'
