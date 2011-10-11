@@ -47,7 +47,7 @@ ActiveRecord::Base.class_eval do
   end
 
   def self.default_value_for(key, val)
-    before_validation_on_create do |item| 
+    before_validation :on => :create do |item| 
       unless item.send(key)               #  unless email_action_type           
         item.send("#{key}=", val)         #    self.email_action_type = 'none'
       end                                 #  end                                   
@@ -92,7 +92,7 @@ ActiveRecord::Base.class_eval do
         end
 
       if count >= max_count
-        item.errors.add_to_base("Max items count exceeded, can't add another one")
+        item.errors.add(:base, "Max items count exceeded, can't add another one")
       end
     end
   end
